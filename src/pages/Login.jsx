@@ -28,9 +28,9 @@ const Login = () => {
     onSubmit: async (values) => {
       const user = await validateUser(values.user);
       if (user) {
-        navigate('/dashboard'); // Redireciona se usuário existe
+        navigate('/'); 
       } else {
-        formik.setStatus({ invalidUser: 'User not found.' }); // Novo estado para erro global
+        formik.setStatus({ invalidUser: 'User not found.' }); 
       }
     },
   });
