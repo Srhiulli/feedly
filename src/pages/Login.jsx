@@ -1,81 +1,42 @@
 import { Button, Card, Field, Input, Stack, Text } from "@chakra-ui/react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUserValidation } from "../hooks/user";
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+
+const loginSchema = yup.object({
+  user: yup
+    .string()
+    .required('Username is required')
+    .min(3, 'Username must be at least 3 characters'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+});
 
 const Login = () => {
-  const [showSignup, setShowSignupButton] = useState(false);
-  const [showLogin, setShowLoginButton] = useState(true);
-
-  const [formData, setFormData] = useState({
-    user: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({
-    user: "",
-    password: "",
-    invalidUser: "",
-  });
+  const { validateUser } = useUserValidation();
   const navigate = useNavigate();
 
-  const newErrors = { user: "", password: "", invalidUser: "" };
+  const formik = useFormik({
+    initialValues: {
+      user: '',
+      password: '',
+    },
+    validationSchema: loginSchema,
+    onSubmit: async (values) => {
+      const user = await validateUser(values.user);
+      if (user) {
+        navigate('/dashboard'); // Redireciona se usuário existe
+      } else {
+        formik.setStatus({ invalidUser: 'User not found.' }); // Novo estado para erro global
+      }
+    },
+  });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (value.trim() !== "") {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    let isValid = true;
-    if (!formData.user.trim()) {
-      newErrors.user = "Username is required";
-      isValid = false;
-    }
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-      isValid = false;
-    }
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const isValidUser = (user) => {
-   const userExistsInDatabase = false;
-    //fazer a chamada do usuário
-    if (!userExistsInDatabase) {
-      setErrors({
-        ...errors,
-        invalidUser: "You're not a member yet. Please signup",
-      });
-      setShowSignupButton(true);
-      setShowLoginButton(false);
-    } else {
-      setShowLoginButton(true);
-      setShowSignupButton(false);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      console.log(formData.user);
-      isValidUser(formData.user);
-    }
-  };
-  
   return (
-    <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
+    <Card.Root maxW="sm" as="form" onSubmit={formik.handleSubmit}>
       <Card.Header>
         <Card.Title>Login</Card.Title>
         <Card.Description>
@@ -85,59 +46,52 @@ const Login = () => {
 
       <Card.Body>
         <Stack gap="4" w="full">
-          <Field.Root isInvalid={!!errors.user}>
+          <Field.Root isInvalid={formik.touched.user && !!formik.errors.user}>
             <Field.Label>Username</Field.Label>
             <Input
               type="text"
               name="user"
-              placeholder="Enter your username"
-              value={formData.user}
-              onChange={handleInputChange}
+              placeholder="Enter your email"
+              value={formik.values.user}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
-            {errors.user && (
+            {formik.touched.user && formik.errors.user && (
               <Text color="red.500" fontSize="sm">
-                {errors.user}
+                {formik.errors.user}
               </Text>
             )}
           </Field.Root>
 
-          <Field.Root isInvalid={!!errors.password}>
+          <Field.Root isInvalid={formik.touched.password && !!formik.errors.password}>
             <Field.Label>Password</Field.Label>
             <Input
               type="password"
               name="password"
               placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleInputChange}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
-            {errors.password && (
+            {formik.touched.password && formik.errors.password && (
               <Text color="red.500" fontSize="sm">
-                {errors.password}
+                {formik.errors.password}
               </Text>
             )}
           </Field.Root>
         </Stack>
       </Card.Body>
 
-      <Card.Footer justifyContent="flex-end">
-        {errors.invalidUser && (
+      <Card.Footer justifyContent="space-between">
+        {formik.status?.invalidUser && (
           <Text color="red.500" fontSize="sm">
-            {errors.invalidUser}
+            {formik.status.invalidUser}
           </Text>
         )}
-        <Button
-          type="submit"
-          variant="outline"
-          display={showSignup ? "block" : "none"}
-          onClick={() => navigate("/signup")}
-        >
+        <Button variant="link" onClick={() => navigate("/signup")}>
           Signup
         </Button>
-        <Button
-          type="submit"
-          variant="outline"
-          display={showLogin ? "block" : "none"}
-        >
+        <Button type="submit" isLoading={formik.isSubmitting}>
           Login
         </Button>
       </Card.Footer>
