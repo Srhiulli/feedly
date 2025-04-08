@@ -12,14 +12,14 @@ async function main() {
       {
         email: user1Email,
         name: "Alice",
-            phone: "123456789",
+        phone: "123456789",
         deleted_at: new Date(),
       },
       {
         email: user2Email,
         name: "Bob", 
-          phone: "987654321",
-                deleted_at: new Date(),
+        phone: "987654321",
+        deleted_at: new Date(),
 
       }
     ],
@@ -30,7 +30,6 @@ async function main() {
 main()
   .catch(e => {
     console.error(e);
-    process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();

@@ -1,37 +1,24 @@
-import { PrismaClient } from "@prisma/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { gql } from 'apollo-server';
 
-const prisma = new PrismaClient().$extends(withAccelerate());
+export const typeDefs = gql`
+  type User {
+    id: ID!
+    email: String!
+    name: String
+    phone: String
+    created_at: String
+    updated_at: String
+  }
 
-async function main() {
-  const user1Email = `alice${Date.now()}@feedly.io`;
-  const user2Email = `bob${Date.now()}@feedly.io`;
-
-  const user1 = await prisma.user.create({
-    data: {
-      email: user1Email,
-      name: "Alice",
-      phone: "123456789",
-      deleted_at: new Date(),
-    },
-  });
-  const user2 = await prisma.user.create({
-    data: {
-      email: user2Email,
-      name: "Bob",
-      phone: "123456789",
-      deleted_at: new Date(),
-    },
-  });
-  console.log(`Created users: ${user1.name} and ${user2.name} `);
+type Query {
+  user(email: String!): User
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+  type Mutation {
+    createUser(
+      email: String!
+      name: String!
+      phone: String
+    ): User!
+  }
+`;

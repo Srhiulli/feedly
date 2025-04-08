@@ -5,15 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "node backend/server.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "queries": "node backend/src/queries.js"
-  },
-  "prisma": {
-    "schema": "backend/prisma/schema.prisma",
-    "seed": "node --experimental-json-modules prisma/seed.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@apollo/client": "^3.13.5",
@@ -23,6 +17,7 @@
     "@emotion/styled": "^11.14.0",
     "@prisma/extension-accelerate": "^1.3.0",
     "apollo-server": "^3.13.0",
+    "dotenv": "^16.4.7",
     "formik": "^2.4.6",
     "framer-motion": "^12.6.2",
     "graphql": "^16.10.0",

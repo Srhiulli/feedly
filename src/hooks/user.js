@@ -1,17 +1,26 @@
-// src/hooks/useUserValidation.js
-import { useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { GET_USER } from '../graphql/queries';
 
 export const useUserValidation = () => {
-  const validateUser = async (email) => {
-    try {
-      const { data } = await useQuery(GET_USER, { variables: { email } });
-      return data?.getUser || null;
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      return null;
-    }
-  };
+  const [getUser, { data, loading, error }] = useLazyQuery(GET_USER, {
+    fetchPolicy: 'network-only' 
+  });
 
-  return { validateUser };
+const validateUser = async (email) => {
+  try {
+    const result = await getUser({ variables: { email } });
+    console.log("GraphQL Response:", result); 
+    return result.data?.getUser || null;
+  } catch (err) {
+    console.error("Full Error:", JSON.stringify(err, null, 2)); 
+    return null;
+  }
+};
+
+  return { 
+    validateUser,
+    loading,
+    error,
+    user: data?.getUser 
+  };
 };
