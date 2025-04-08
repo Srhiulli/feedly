@@ -13,14 +13,13 @@ async function main() {
         email: user1Email,
         name: "Alice",
         phone: "123456789",
-        deleted_at: new Date(),
+        password: "password123",
       },
       {
         email: user2Email,
         name: "Bob", 
         phone: "987654321",
-        deleted_at: new Date(),
-
+        password: "password123",
       }
     ],
     skipDuplicates: true,
