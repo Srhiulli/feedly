@@ -1,15 +1,16 @@
 import 'dotenv/config';
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { typeDefs } from './src/queries.js';
-import { resolvers } from './src/lib/resolvers.js';
+import { typeDefs } from './src/graphql/schema/index.js';
 import prisma from './src/lib/prismaClient.js';
+import { authResolvers } from './src/graphql/resolvers/authResolvers.js';
 
 
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers: [authResolvers], 
+
 });
 
 const { url } = await startStandaloneServer(server, {

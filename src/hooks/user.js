@@ -1,26 +1,28 @@
-import { useLazyQuery } from '@apollo/client';
-import { GET_USER } from '../graphql/queries';
+import { useMutation } from '@apollo/client';
+import { LOGIN_USER } from '../graphql/mutations/login';
 
-export const useUserValidation = () => {
-  const [getUser, { data, loading, error }] = useLazyQuery(GET_USER, {
-    fetchPolicy: 'network-only' 
-  });
+export const useAuth = () => {
+  const [getUser, { data, error }] = useMutation(LOGIN_USER);
 
-const validateUser = async (email) => {
-  try {
-    const result = await getUser({ variables: { email } });
-    console.log("GraphQL Response:", result); 
-    return result.data?.getUser || null;
-  } catch (err) {
-    console.error("Full Error:", JSON.stringify(err, null, 2)); 
-    return null;
-  }
-};
+  const validateUser = async (email, password) => {
 
-  return { 
-    validateUser,
-    loading,
-    error,
-    user: data?.getUser 
+    try {
+      const { data } = await getUser({ 
+        variables: { email, password } 
+      });
+
+      
+      if (!data?.user) {
+        return { error: "User not found" };
+      }
+      
+      return { user: data.user };
+      
+    } catch (error) {
+      console.error("Login failed:", error);
+      return { error: error.message };
+    }
   };
+
+  return { validateUser, userData: data, error };
 };

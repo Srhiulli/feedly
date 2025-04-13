@@ -1,28 +1,25 @@
-import prisma from './prismaClient.js';
+import prisma from '../../lib/prismaClient.js';
 import { UserInputError } from 'apollo-server';
+import bcrypt from 'bcryptjs';
 
 export const resolvers = {
   Query: {
-    user: async (_, { email }) => {
-      // Validação do formato do email
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        throw new UserInputError('Formato de email inválido');
-      }
+    login: async (_, { email, password }) => {
+      const user = await prisma.user.findUnique({ where: { email } });
+      
+      if (!user) throw new Error('User not found');
+      
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) throw new Error('Invalid password');
 
-      const user = await prisma.user.findFirst({
-        where: { email }
-      });
 
-      if (!user) {
-        throw new UserInputError('Usuário não encontrado', {
-          extensions: {
-            code: 'USER_NOT_FOUND',
-            email
-          }
-        });
-      }
-
-      return user;
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name
+        }
+      };
     }
   },
   Mutation: {
