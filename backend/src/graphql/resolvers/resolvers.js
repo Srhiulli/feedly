@@ -6,7 +6,7 @@ export const resolvers = {
   Query: {
     login: async (_, { email, password }) => {
       const user = await prisma.user.findUnique({ where: { email } });
-      
+
       if (!user) throw new Error('User not found');
       
       const valid = await bcrypt.compare(password, user.password);

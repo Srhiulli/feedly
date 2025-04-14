@@ -24,21 +24,11 @@ const Login = () => {
     },
     validationSchema: loginSchema,
     onSubmit: async (values, { setSubmitting, setStatus }) => {
-      try {
-        const response = await validateUser(values.email, values.password);
-
-        if (response.error) {
-          setStatus({ error: 'Invalid email or password' }); 
-          console.log('Login failed:', response.error);
-        } else {
-          console.log('Login successful:', response.user);
-        }
-      } catch (error) {
-        setStatus({ error: error.message || 'Login failed' });
-        console.error("Login failed:", error);
-      } finally {
+     const response = await validateUser(values.email, values.password);
+      if(response.error) {
+        setStatus({ error: 'Login failed' });
+      } 
         setSubmitting(false);
-      }
     },
   });
 
@@ -92,7 +82,7 @@ const Login = () => {
       <Card.Footer justifyContent="space-between">
         {formik.status?.error && (
           <Text color="red.500" fontSize="sm">
-            {formik.status.error}
+            {formik.status?.error}
           </Text>
         )}
         <Button variant="link" onClick={() => console.log('logado')}>
