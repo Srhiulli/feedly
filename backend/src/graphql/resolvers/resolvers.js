@@ -1,30 +1,36 @@
 import prisma from '../../lib/prismaClient.js';
 import { UserInputError } from 'apollo-server';
-import bcrypt from 'bcryptjs';
+import { loginUser } from '../../modules/auth/login.js';
+
 
 export const resolvers = {
   Query: {
-    login: async (_, { email, password }) => {
-      const user = await prisma.user.findUnique({ where: { email } });
-
-      if (!user) throw new Error('User not found');
-      
-      const valid = await bcrypt.compare(password, user.password);
-      if (!valid) throw new Error('Invalid password');
-
-
-      return {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name
+    user: async (_, { email }) => {
+      try {
+        const user = await prisma.user.findUnique({ 
+          where: { email },
+          select: {  
+            id: true,
+            email: true,
+            name: true,
+            phone: true
+          }
+        });
+        if (!user) {
+          throw new UserInputError('Usuário não encontrado', {
+            extensions: { code: 'USER_NOT_FOUND' }
+          });
         }
-      };
+
+        return user; 
+
+      } catch (error) {
+        throw new Error(error.message || 'Erro ao buscar usuário');
+      }
     }
   },
   Mutation: {
     createUser: async (_, { email, name, phone }) => {
-      // Validações dos campos
       if (!email) {
         throw new UserInputError('Email é obrigatório');
       }
@@ -37,7 +43,6 @@ export const resolvers = {
         throw new UserInputError('Telefone deve ter 10 ou 11 dígitos');
       }
 
-      // Verifica se usuário já existe
       const existingUser = await prisma.user.findFirst({
         where: { email }
       });
@@ -50,7 +55,6 @@ export const resolvers = {
         });
       }
 
-      // Criação do usuário com tratamento de erro
       try {
         return await prisma.user.create({
           data: {
@@ -63,6 +67,9 @@ export const resolvers = {
         console.error('Erro ao criar usuário:', error);
         throw new Error('Erro interno ao cadastrar usuário');
       }
-    }
+    },
+    login: async (_, { email, password }) => {
+      return await loginUser(email, password);
+    },
   }
 };

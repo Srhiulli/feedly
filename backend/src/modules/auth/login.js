@@ -13,12 +13,9 @@ export async function loginUser(email, password) {
   }
 
   const wrongPassword = await bcrypt.compare(password, user.password);
-  console.log(wrongPassword)
   if (wrongPassword === true) {
     throw new Error("Senha incorreta")
   }
-
-  console.log('User found:', user);
 
   // const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
   //   expiresIn: '7d',

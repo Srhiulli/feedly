@@ -1,15 +1,19 @@
 import { Button, Card, Field, Input, Stack, Text } from "@chakra-ui/react";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { Navigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/user";
 
 
 const Signup = () => {
+  const { getUserByEmail } = useAuth();
+  const navigate = useNavigate();
+
   const signupSchema = yup.object({
-  user: yup
+  email: yup
     .string()
-    .required('Username is required')
-    .min(3, 'Username must be at least 3 characters'),
+    .required('Email is required')
+    .min(3, 'Email must be at least 3 characters'),
   password: yup
     .string()
     .required('Password is required')
@@ -18,17 +22,16 @@ const Signup = () => {
   
    const formik = useFormik({
     initialValues: {
-      user: '',
+      email: '',
       password: '',
     },
     validationSchema: signupSchema,
-    onSubmit: async (values) => {
-      const user = await validateUser(values.user);
-      if (user) {
-        Navigate('/'); 
-      } else {
-        formik.setStatus({ invalidUser: 'User not found.' }); 
-      }
+     onSubmit: async (values) => {
+       const isAlredyUser = await getUserByEmail(values.email);
+      if (isAlredyUser.user) {
+        navigate('/login'); 
+       } 
+       ///criar usuário
     },
   });
   
@@ -45,19 +48,19 @@ const Signup = () => {
 
       <Card.Body>
         <Stack gap="4" w="full">
-          <Field.Root isInvalid={formik.touched.user && !!formik.errors.user}>
-            <Field.Label>Username</Field.Label>
+          <Field.Root isInvalid={formik.touched.email && !!formik.errors.email}>
+            <Field.Label>Email</Field.Label>
             <Input
               type="text"
-              name="user"
+              name="email"
               placeholder="Enter your email"
-              value={formik.values.user}
+              value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
-            {formik.touched.user && formik.errors.user && (
+            {formik.touched.email && formik.errors.email && (
               <Text color="red.500" fontSize="sm">
-                {formik.errors.user}
+                {formik.errors.email}
               </Text>
             )}
           </Field.Root>
@@ -90,7 +93,6 @@ const Signup = () => {
         <Button
           type="submit"
           variant="outline"
-          onClick= {formik.isSubmitting}
         >
           Signup
         </Button>
