@@ -2,6 +2,7 @@ import { Button, Card, Field, Input, Stack, Text } from "@chakra-ui/react";
 import { useAuth } from "../hooks/user";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import {useNavigate } from "react-router-dom";
 
 const loginSchema = yup.object({
   email: yup
@@ -16,6 +17,8 @@ const loginSchema = yup.object({
 
 const Login = () => {
   const { validateUser } = useAuth();
+    const navigate = useNavigate();
+
 
   const formik = useFormik({
     initialValues: {
@@ -85,10 +88,13 @@ const Login = () => {
             {formik.status?.error}
           </Text>
         )}
-        <Button variant="link" onClick={() => console.log('logado')}>
+        <Button variant="submit"
+          onClick={() =>
+          navigate('/signup')
+          }>
           Signup
         </Button>
-        <Button type="submit" isLoading={formik.isSubmitting}>
+        <Button type="link" isLoading={formik.isSubmitting}>
           Login
         </Button>
       </Card.Footer>
