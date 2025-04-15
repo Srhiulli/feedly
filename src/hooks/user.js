@@ -1,10 +1,13 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations/login';
 import { GET_USER } from '../graphql/queries/getUser';
+import { CREATE_USER } from '../graphql/mutations/createUser';
 
 export const useAuth = () => {
   const [loginUser, { data: loginData, error: loginError }] = useMutation(LOGIN_USER);
   const [getUserLazy, { data: userData, error: userError }] = useLazyQuery(GET_USER);
+    const [createUser, { data: createUserData, error: createUserError }] = useMutation(CREATE_USER);
+
 
   const validateUser = async (email, password) => {
     try {
@@ -31,12 +34,32 @@ export const useAuth = () => {
     }
   };
 
+  const handleCreateUser = async (email, password) => { 
+    console.log("creating", email);
+
+    try {
+      const {data} = await createUser({
+        variables: { email, password }
+      })
+      if (!data) {
+          return { user: data.createUser };
+      }
+      return { user: data}
+    }
+    catch (error) {
+      return { error: error.message };
+    }
+  }
+
   return {
     validateUser,
     getUserByEmail,
     loginData,
     loginError,
     userData,
-    userError
+    userError,
+    handleCreateUser,
+    createUserData,
+    createUserError
   };
 };

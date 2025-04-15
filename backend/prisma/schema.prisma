@@ -14,5 +14,5 @@ model user {
   phone   String?
   password String?
   created_at DateTime @default(now())
-  deleted_at DateTime 
+  deleted_at DateTime?
 }

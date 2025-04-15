@@ -7,6 +7,8 @@ import { useAuth } from "../hooks/user";
 
 const Signup = () => {
   const { getUserByEmail } = useAuth();
+  const { handleCreateUser } = useAuth();
+
   const navigate = useNavigate();
 
   const signupSchema = yup.object({
@@ -31,7 +33,8 @@ const Signup = () => {
       if (isAlredyUser.user) {
         navigate('/login'); 
        } 
-       ///criar usuário
+       const createUser = await handleCreateUser(values.email, values.password)
+       console.log("User created", createUser);
     },
   });
   
