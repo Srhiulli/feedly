@@ -26,12 +26,12 @@ const Login = () => {
       password: '',
     },
     validationSchema: loginSchema,
-    onSubmit: async (values, { setSubmitting, setStatus }) => {
+    onSubmit: async (values, {  setStatus }) => {
      const response = await validateUser(values.email, values.password);
       if(response.error) {
         setStatus({ error: 'Login failed' });
       } 
-        setSubmitting(false);
+      navigate('/dashboard');
     },
   });
 

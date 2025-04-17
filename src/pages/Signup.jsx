@@ -2,10 +2,13 @@ import { Button, Card, Field, Input, Stack, Text } from "@chakra-ui/react";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useAuth } from "../hooks/user";
+import { useNavigate } from "react-router-dom";
 
 
 const Signup = () => {
   const { handleCreateUser } = useAuth();
+
+  const navigate = useNavigate();
 
   const signupSchema = yup.object({
   email: yup
@@ -28,7 +31,9 @@ const Signup = () => {
        const response = await handleCreateUser(values.email, values.password)
        if(response.error) {
           setStatus({ error: 'Signup failed' });
-      } 
+       } 
+       navigate('/dashboard');
+       
     },
   });
   
