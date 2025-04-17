@@ -41,13 +41,14 @@ export const useAuth = () => {
       const {data} = await createUser({
         variables: { email, password }
       })
-      if (!data) {
-          return { user: data.createUser };
+      if (!data?.createUser) {
+      return { error: 'Erro inesperado' };
       }
-      return { user: data}
+    return { user: data.createUser };
     }
     catch (error) {
-      return { error: error.message };
+      console.log("error", error);
+      return { error: error };
     }
   }
 

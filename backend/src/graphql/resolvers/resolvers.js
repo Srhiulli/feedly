@@ -7,9 +7,9 @@ export const resolvers = {
   Query: {
     user: async (_, { email }) => {
       try {
-        const user = await prisma.user.findUnique({ 
+        const user = await prisma.user.findUnique({
           where: { email },
-          select: {  
+          select: {
             id: true,
             email: true,
             name: true,
@@ -22,7 +22,7 @@ export const resolvers = {
           });
         }
 
-        return user; 
+        return user;
 
       } catch (error) {
         throw new Error(error.message || 'Erro ao buscar usuário');
@@ -30,29 +30,35 @@ export const resolvers = {
     }
   },
   Mutation: {
-    createUser: async (_, { email, password }) => {
-      if (!email) {
-        throw new UserInputError('Email é obrigatório');
-      }
+createUser: async (_, { email, password }) => {
+  if (!email) throw new UserInputError('Email é obrigatório');
 
-      if (!password || password.trim().length < 2) {
-        throw new UserInputError('Nome deve ter pelo menos 2 caracteres');
-      }
+  if (!password || password.trim().length < 2) {
+    throw new UserInputError('Senha deve ter pelo menos 2 caracteres');
+  }
 
-      try {
-        return await prisma.user.create({
-          data: {
-            email,
-            password: password.trim(),
-          }
-        });
-      } catch (error) {
-        console.error('Erro ao criar usuário:', error);
-        throw new Error('Erro interno ao cadastrar usuário');
-      }
-    },
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+
+  if (existingUser) {
+    throw new UserInputError('Este email já está em uso');
+  }
+
+  try {
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: password.trim(),
+      },
+    });
+
+    return user;
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error);
+    throw new Error('Erro interno ao cadastrar usuário');
+  }
+},
     login: async (_, { email, password }) => {
       return await loginUser(email, password);
     },
   }
-};
+}
