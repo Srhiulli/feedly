@@ -24,9 +24,11 @@ const Signup = () => {
       password: '',
     },
     validationSchema: signupSchema,
-     onSubmit: async (values) => {
-       const createUser = await handleCreateUser(values.email, values.password)
-       console.log("User created", createUser);
+     onSubmit: async (values, {setStatus}) => {
+       const response = await handleCreateUser(values.email, values.password)
+       if(response.error) {
+          setStatus({ error: 'Signup failed' });
+      } 
     },
   });
   
@@ -80,9 +82,9 @@ const Signup = () => {
       </Card.Body>
 
       <Card.Footer justifyContent="flex-end">
-     {formik.status?.invalidUser && (
+     {formik.status?.error && (
           <Text color="red.500" fontSize="sm">
-            {formik.status.invalidUser}
+            {formik.status.error}
           </Text>
         )}
         <Button
