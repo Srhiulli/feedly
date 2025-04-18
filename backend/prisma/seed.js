@@ -4,8 +4,9 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 const prisma = new PrismaClient().$extends(withAccelerate());
 
 async function main() {
-  const user1Email = `alice${Date.now()}@feedly.io`;
-  const user2Email = `bob${Date.now()}@feedly.io`;
+  const now = Date.now();
+  const user1Email = `alice${now}@feedly.io`;
+  const user2Email = `bob${now}@feedly.io`;
 
   await prisma.user.createMany({
     data: [
@@ -17,13 +18,32 @@ async function main() {
       },
       {
         email: user2Email,
-        name: "Bob", 
+        name: "Bob",
         phone: "987654321",
         password: "password123",
       }
     ],
     skipDuplicates: true,
   });
+
+  const alice = await prisma.user.findUnique({ where: { email: user1Email } });
+  const bob = await prisma.user.findUnique({ where: { email: user2Email } });
+
+  if (alice && bob) {
+    await prisma.feedback.createMany({
+      data: [
+        {
+          message: "Adorei o produto, superou minhas expectativas!",
+          user_id: alice.id,
+        },
+        {
+          message: "O atendimento foi rápido e eficiente.",
+          user_id: bob.id,
+        }
+      ],
+      skipDuplicates: true,
+    });
+  }
 }
 
 main()

@@ -8,11 +8,24 @@ generator client {
 }
 
 model user {
-  id      String   @id @default(uuid())
-  name    String?
-  email   String @unique
-  phone   String?
-  password String?
-  created_at DateTime @default(now())
-  deleted_at DateTime?
+  id          String    @id @default(uuid())
+  name        String?
+  email       String    @unique
+  phone       String?
+  password    String?
+  created_at  DateTime  @default(now())
+  deleted_at  DateTime?
+  
+  feedback    feedback?
+
+}
+
+model feedback {
+  id          String   @id @default(uuid())
+  message     String
+  created_at  DateTime @default(now())
+  deleted_at  DateTime?
+
+  user_id     String   @unique
+  user        user     @relation(fields: [user_id], references: [id])
 }
