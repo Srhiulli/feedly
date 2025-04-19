@@ -1,6 +1,46 @@
 import { Box, Flex, Heading, Text, Button, VStack, SimpleGrid } from '@chakra-ui/react';
+import prisma from '../../backend/src/lib/prismaClient';
+import { useAuth } from '../hooks/user';
 
 export default function Dashboard() {
+
+  const { getUserById } = useAuth();
+
+
+  const fetchUser = async (id) => {
+    const response = await getUserById(id)
+    if (!user) {
+      console.log('Usuário não encontrado');
+    }
+      return response.user;
+  }
+
+  // const user = async () => {
+  //   await fetchUser('cf58d2d0-a2e2-4faf-a31a-1b45988d5f87');
+  //   if (user) {
+  //      console.log(user.name); 
+  //   }
+  // }
+
+  // user();
+
+
+  const getFeedback = async (user_id) => {
+    const message = await prisma.feedback.findMany({
+      where: { user_id },
+      select: {
+        id: true,
+        message: true,
+        deleted_at: true,
+        created_at: true
+      }
+    })
+    if (!message) {
+      console.log('feedback not found');
+    }
+  }
+ 
+
   return (
     <Box p={8} minH="100vh" minW="100vw">
       <Heading mb={6}>Olá, Sarah 👋</Heading>

@@ -10,14 +10,25 @@ export const userTypeDefs = gql`
     updated_at: String
   }
 
+  type Feedback {
+    id: ID!
+    message: String!
+    deleted_at: String
+    created_at: String
+    user_id: ID!
+  }
+
   type AuthPayload {
     token: String!
     user: User!
   }
 
   type Query {
-    user(email: String!): User
+    userByEmail(email: String!): User
+    userById(id: ID!): User
+    feedbackByUserId(user_id: String!): Feedback
   }
+    
 
   type Mutation {
     createUser(email: String!, password: String!): User!

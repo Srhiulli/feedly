@@ -1,15 +1,16 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations/login';
-import { GET_USER } from '../graphql/queries/getUser';
-import { CREATE_USER } from '../graphql/mutations/createUser';
+import { GET_USER_BY_EMAIL, GET_USER_BY_ID } from '../graphql/queries/getUser';
+import { CREATE_USER} from '../graphql/mutations/createUser';
 
 export const useAuth = () => {
   const [loginUser, { data: loginData, error: loginError }] = useMutation(LOGIN_USER);
-  const [getUserLazy, { data: userData, error: userError }] = useLazyQuery(GET_USER);
-    const [createUser, { data: createUserData, error: createUserError }] = useMutation(CREATE_USER);
+  const [getUserLazy, { data: userData, error: userError }] = useLazyQuery(GET_USER_BY_EMAIL);
+  const [createUser, { data: createUserData, error: createUserError }] = useMutation(CREATE_USER);
+  const [getUserByIdLazy, { data: userByIdData, error: userByIdError }] = useLazyQuery(GET_USER_BY_ID);
 
 
-  const validateUser = async (email, password) => {
+  const getUser = async (email, password) => {
     try {
       const { data } = await loginUser({ 
         variables: { email, password } 
@@ -34,9 +35,18 @@ export const useAuth = () => {
     }
   };
 
-  const handleCreateUser = async (email, password) => { 
-    console.log("creating", email);
+  const getUserById = async (id) => {
+    try {
+      const result = await getUserByIdLazy({
+        variables: { id }
+      });
+      return { user: result.data?.userById };
+    } catch (error) {
+      return { error: error.message };
+    }
+  };
 
+  const handleCreateUser = async (email, password) => { 
     try {
       const {data} = await createUser({
         variables: { email, password }
@@ -53,7 +63,7 @@ export const useAuth = () => {
   }
 
   return {
-    validateUser,
+    getUser,
     getUserByEmail,
     loginData,
     loginError,
@@ -61,6 +71,9 @@ export const useAuth = () => {
     userError,
     handleCreateUser,
     createUserData,
-    createUserError
+    createUserError,
+    getUserById,
+    userByIdData,
+    userByIdError
   };
 };

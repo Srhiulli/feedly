@@ -16,7 +16,7 @@ const loginSchema = yup.object({
 });
 
 const Login = () => {
-  const { validateUser } = useAuth();
+  const { getUser } = useAuth();
     const navigate = useNavigate();
 
 
@@ -27,7 +27,7 @@ const Login = () => {
     },
     validationSchema: loginSchema,
     onSubmit: async (values, {  setStatus }) => {
-     const response = await validateUser(values.email, values.password);
+     const response = await getUser(values.email, values.password);
       if(response.error) {
         setStatus({ error: 'Login failed' });
       } 
