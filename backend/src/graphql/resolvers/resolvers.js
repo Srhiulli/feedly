@@ -49,39 +49,33 @@ export const resolvers = {
         throw new Error(error.message || 'Erro ao buscar usuário');
       }
     },
-    feedbackByUserId: async (_, { user_id }) => {
-      try {
-        const feedback = await prisma.feedback.findMany({
-          where: { user_id },
-          select: {
-            id: true,
-            title: true,
-            message: true,
-            stars: true,
-            created_at: true,
-            updated_at: true,
-            deleted_at: true,
-            is_public: true,
-            status: true,
-            category: true,
-            response: true,
-            tags: true,
-            created_by: true,
-            user_id: true,
-            user: true,
+      feedbackByUserId: async (_, { user_id }) => {
+        try {
+          const feedback = await prisma.feedback.findMany({
+            where: { user_id },
+            include: {
+              user: true, 
+              createdBy: { 
+                select: { 
+                  id: true,
+                  name: true,
+                  email: true 
+                },
+              },
+            },
+          });
+          
+          const validFeedback = feedback.filter((f) => f.id !== null);
+
+          if (!validFeedback.length) {
+            console.error('Feedback não encontrado');
           }
-        });
-        const validFeedback = feedback.filter((f) => f.id !== null);
-
-        if (!validFeedback) {
-          console.error('Feedback não encontrado');
+          
+          return validFeedback;
+        } catch (error) {
+          throw new Error(error.message || 'Error to find feedback');
         }
-        return validFeedback;
-
-      } catch (error) {
-        throw new Error(error.message || 'Error to find feedback');
       }
-    }
   },
   Mutation: {
     createUser: async (_, { email, password }) => {

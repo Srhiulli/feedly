@@ -16,7 +16,8 @@ model user {
   created_at  DateTime  @default(now())
   deleted_at  DateTime?
   
-  feedback feedback[] 
+  feedbackReceived feedback[] @relation("FeedbackTargetUser")
+  feedbackCreated  feedback[] @relation("CreatedByUser")
 
 
 }
@@ -35,7 +36,9 @@ model feedback {
   response    String?
   tags        String[]
   created_by  String?
+  createdBy   user?    @relation("CreatedByUser", fields: [created_by], references: [id])
+
 
   user_id     String   
-  user        user     @relation(fields: [user_id], references: [id])
+  user        user     @relation("FeedbackTargetUser", fields: [user_id], references: [id])
 }

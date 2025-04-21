@@ -10,6 +10,7 @@ export const useFeedback = () => {
       const result = await getFeedback({
         variables: { user_id },
       });
+      console.log("result", result);
       return { feedback: result.data?.feedbackByUserId };
     } catch (error) {
       return { error: error.message };

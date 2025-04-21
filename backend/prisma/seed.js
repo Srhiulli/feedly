@@ -40,7 +40,7 @@ async function main() {
           status: "resolved",
           category: "elogio",
           tags: ["produto", "qualidade"],
-          created_by: "admin",
+          created_by: bob.id,
           user_id: alice.id,
         },
         {
@@ -51,7 +51,7 @@ async function main() {
           status: "resolved",
           category: "elogio",
           tags: ["suporte", "tempo"],
-          created_by: "admin",
+          created_by: alice.id,
           user_id: bob.id,
         },
         ...Array.from({ length: 18 }).map((_, i) => ({
@@ -62,7 +62,7 @@ async function main() {
           status: i % 3 === 0 ? "pending" : "resolved",
           category: ["bug", "sugestão", "elogio"][i % 3],
           tags: ["UX", "UI"],
-          created_by: "admin",
+          created_by: i % 2 === 0 ? alice.id : bob.id, 
           user_id: i % 2 === 0 ? alice.id : bob.id,
         })),
       ],
