@@ -1,18 +1,20 @@
 import { Box, Flex, Heading, Text, Button, VStack, SimpleGrid } from '@chakra-ui/react';
-import prisma from '../../backend/src/lib/prismaClient';
 import { useAuth } from '../hooks/user';
 import { useEffect, useState } from 'react';
+import { useFeedback } from '../hooks/feedback';
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
-  const [feedback, setFeedback] = useState(null);
 
+  const {getFeedbackByUserId} = useFeedback();
+  const [user, setUser] = useState(null);
+  const [feedback, setFeedback] = useState([]);
   const { getUserById } = useAuth();
 
 
-  // useEffect(() => {
-  //   fetchUser('cf58d2d0-a2e2-4faf-a31a-1b45988d5f87');
-  // })
+  useEffect(() => {
+    fetchUser('cf58d2d0-a2e2-4faf-a31a-1b45988d5f87');
+    fetchFeedback('cf58d2d0-a2e2-4faf-a31a-1b45988d5f87');
+  }, [])
 
   const fetchUser = async (id) => {
     const response = await getUserById(id);
@@ -23,43 +25,50 @@ export default function Dashboard() {
     setUser(response.user);
   };
 
-
-
-  const getFeedback = async (user_id) => {
-    const message = await prisma.feedback.findMany({
-      where: { user_id },
-      select: {
-        id: true,
-        message: true,
-        deleted_at: true,
-        created_at: true
+const fetchFeedback = async (user_id) => {
+  const response = await getFeedbackByUserId(user_id) 
+      if (!response) {
+      return;
       }
-    })
-    if (!message) {
-      console.log('feedback not found');
-    }
-    setFeedback(message);
-  }
- 
+    setFeedback(response.feedback);
+};
+  
+
+  const calculateAverageStars = () => {
+    if (!feedback.length) return '0 / 5';
+    const total = feedback.reduce((sum, f) => sum + f.stars, 0);
+    const avg = total / feedback.length;
+    return `${avg.toFixed(1)} / 5`;
+  };
 
   return (
     <Box p={8} minH="100vh" minW="100vw">
-      <Heading mb={6}>Olá, {user? user.name : 'loading...' } 👋</Heading>
+      <Heading mb={6}>Hello, {user? user.name : 'loading...' } 👋</Heading>
 
       <SimpleGrid columns={[1, 2, 3]} spacing={6} mb={10}>
-        <StatCard title="Feedbacks recebidos" value="12" />
-        <StatCard title="Feedbacks enviados" value="7" />
-        <StatCard title="Média de avaliações" value="4.6 / 5" />
+        <StatCard title="Received feedbacks" value={feedback.length} />
+        <StatCard title="Average rating" value={calculateAverageStars()} />
       </SimpleGrid>
 
       <Flex justify="space-between" mb={4}>
-        <Heading size="md">Últimos feedbacks recebidos</Heading>
-        <Button colorScheme="teal">Dar Feedback</Button>
+        <Heading size="md">Latest feedbacks</Heading>
+        <Button colorScheme="teal">Give Feedback</Button>
       </Flex>
 
       <VStack spacing={4} align="stretch">
-        <FeedbackCard name="João" message="Gostei da sua última entrega, bem completa!" date="12/04/2025" />
-        <FeedbackCard name="Ana" message="Você foi super colaborativa no projeto!" date="10/04/2025" />
+        {feedback ? (
+          feedback.map((item) => (
+            console.log('item', item),
+            <FeedbackCard
+              key={item.id}
+              name={item.userName || 'Unknown'}
+              message={item.message}
+              date={new Date(item.created_at).toLocaleDateString()}
+            />
+          ))
+        ) : (
+          'You have no feedbacks yet.'
+        )}
       </VStack>
     </Box>
   );

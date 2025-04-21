@@ -16,16 +16,26 @@ model user {
   created_at  DateTime  @default(now())
   deleted_at  DateTime?
   
-  feedback    feedback?
+  feedback feedback[] 
+
 
 }
 
 model feedback {
   id          String   @id @default(uuid())
+  title       String
   message     String
+  stars       Int
   created_at  DateTime @default(now())
+  updated_at  DateTime?
   deleted_at  DateTime?
+  is_public   Boolean  @default(false)
+  status      String   @default("pending")
+  category    String
+  response    String?
+  tags        String[]
+  created_by  String?
 
-  user_id     String   @unique
+  user_id     String   
   user        user     @relation(fields: [user_id], references: [id])
 }

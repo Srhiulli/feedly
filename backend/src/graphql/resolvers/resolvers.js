@@ -40,9 +40,7 @@ export const resolvers = {
           }
         });
         if (!user) {
-          throw new UserInputError('Usuário não encontrado', {
-            extensions: { code: 'USER_NOT_FOUND' }
-          });
+         console.error('Usuário não encontrado');
         }
 
         return user;
@@ -53,22 +51,32 @@ export const resolvers = {
     },
     feedbackByUserId: async (_, { user_id }) => {
       try {
-        const feedback = await prisma.feedback.findUnique({
+        const feedback = await prisma.feedback.findMany({
           where: { user_id },
           select: {
             id: true,
+            title: true,
             message: true,
+            stars: true,
+            created_at: true,
+            updated_at: true,
             deleted_at: true,
-            created_at: true
+            is_public: true,
+            status: true,
+            category: true,
+            response: true,
+            tags: true,
+            created_by: true,
+            user_id: true,
+            user: true,
           }
         });
-        if (!feedback) {
-          throw new UserInputError('feedback not found', {
-            extensions: { code: 'USER_NOT_FOUND' }
-          });
-        }
+        const validFeedback = feedback.filter((f) => f.id !== null);
 
-        return feedback;
+        if (!validFeedback) {
+          console.error('Feedback não encontrado');
+        }
+        return validFeedback;
 
       } catch (error) {
         throw new Error(error.message || 'Error to find feedback');

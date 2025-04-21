@@ -12,10 +12,20 @@ export const userTypeDefs = gql`
 
   type Feedback {
     id: ID!
-    message: String!
-    deleted_at: String
+    title: String
+    message: String
+    stars: Int
     created_at: String
+    updated_at: String
+    deleted_at: String
+    is_public: Boolean
+    status: String
+    category: String
+    response: String
+    tags: [String]
+    created_by: String
     user_id: ID!
+    user: User
   }
 
   type AuthPayload {
@@ -26,7 +36,7 @@ export const userTypeDefs = gql`
   type Query {
     userByEmail(email: String!): User
     userById(id: ID!): User
-    feedbackByUserId(user_id: String!): Feedback
+    feedbackByUserId(user_id: String!): [Feedback]
   }
     
 
