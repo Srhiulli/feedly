@@ -43,5 +43,17 @@ export const userTypeDefs = gql`
   type Mutation {
     createUser(email: String!, password: String!): User!
     login(email: String!, password: String!): AuthPayload!
+    createFeedback(
+      title: String
+      message: String!
+      stars: Int
+      is_public: Boolean
+      status: String
+      category: String
+      response: String
+      tags: [String]
+      user_id: String!
+      created_by: String!
+    ): Feedback!
   }
 `;

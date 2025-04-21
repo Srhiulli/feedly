@@ -108,5 +108,27 @@ export const resolvers = {
     login: async (_, { email, password }) => {
       return await loginUser(email, password);
     },
+    createFeedback: async (_, { title, message, stars, is_public, status, category, response, tags, user_id, created_by }) => {
+      try {
+        const feedback = await prisma.feedback.create({
+          data: {
+            title,
+            message,
+            stars,
+            is_public,
+            status,
+            category,
+            response,
+            tags, 
+            user_id,
+            created_by
+          }
+        });
+        return feedback;
+      } catch (error) {
+        console.error('Erro ao criar feedback:', error);
+        throw new Error('Erro interno ao criar feedback');
+      }
+    }
   }
 }
