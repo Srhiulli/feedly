@@ -57,7 +57,6 @@ export const useAuth = () => {
     return { user: data.createUser };
     }
     catch (error) {
-      console.log("error", error);
       return { error: error };
     }
   }

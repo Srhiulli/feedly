@@ -1,14 +1,17 @@
-import { Box, Flex, Heading, Text, Button, VStack, SimpleGrid } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, Button, VStack, SimpleGrid, Dialog } from '@chakra-ui/react';
 import { useAuth } from '../hooks/user';
 import { useEffect, useState } from 'react';
 import { useFeedback } from '../hooks/feedback';
 import { format } from 'date-fns';
+import CreateFeedbackDialog from '../components/UserCard/CreateFeedback';
 
 export default function Dashboard() {
   const { getFeedbackByUserId } = useFeedback();
   const [user, setUser] = useState(null);
   const [feedback, setFeedback] = useState([]);
   const { getUserById } = useAuth();
+  const [showForm, setShowForm] = useState(false);
+
 
   useEffect(() => {
     fetchUser('18760e6c-ac14-452b-8db0-9eb3814aa800');
@@ -64,9 +67,20 @@ export default function Dashboard() {
           colorScheme="teal" 
           size="md" 
           width={{ base: '100%', md: 'auto' }} 
+          onClick={() => setShowForm(true)}
+
         >
           Give Feedback
         </Button>
+        {showForm && (
+        <Dialog.Root open={showForm} onOpenChange={setShowForm} size="md" placement="center"> 
+        <Dialog.Trigger/>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+        <CreateFeedbackDialog setShowForm={setShowForm} />                   
+        </Dialog.Positioner>
+       </Dialog.Root>
+      )}
       </Flex>
 
       <VStack spacing={4} align="stretch">

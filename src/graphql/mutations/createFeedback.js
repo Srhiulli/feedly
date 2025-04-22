@@ -11,7 +11,7 @@ export const CREATE_FEEDBACK = gql`
     $response: String
     $tags: [String!]!
     $user_id: String!
-    $created_by: String
+    $created_by: String!
   ) {
     createFeedback(
       title: $title
@@ -34,7 +34,7 @@ export const CREATE_FEEDBACK = gql`
       category
       response
       tags
-      createdAt
+      created_at
     }
   }
 `;

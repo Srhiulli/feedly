@@ -32,7 +32,7 @@ const handleCreateFeedback = async (
     tags
   ) => {
     try {
-      const { data } = await createFeedback({
+      const { data } =  await createFeedback({
         variables: {
           user_id,
           created_by,
@@ -46,13 +46,12 @@ const handleCreateFeedback = async (
           tags,
         },
       });
-
       if (!data?.createFeedback) {
         return { error: "Erro inesperado" };
       }
       return { feedback: data.createFeedback };
     } catch (error) {
-      console.log("error", error);
+      console.log("error hook", error);
       return { error: error.message };
     }
   };

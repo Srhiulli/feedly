@@ -19,7 +19,6 @@ model user {
   feedbackReceived feedback[] @relation("FeedbackTargetUser")
   feedbackCreated  feedback[] @relation("CreatedByUser")
 
-
 }
 
 model feedback {
