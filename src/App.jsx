@@ -5,15 +5,29 @@ import './App.css';
 import Login from './pages/login';
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/dashBoard";
+import { PublicRoute } from "./routes/PublicRoute";
+import { PrivateRoute } from "./routes/PrivateRoute";
 
 function App() {
   return (
     <ApolloProvider client={client}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+       <Routes>
+          <Route path="/" element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } />
+          <Route path="/signup" element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          } />
+          <Route path="/dashboard" element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </ApolloProvider>
