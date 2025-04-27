@@ -40,8 +40,13 @@ export default function Dashboard() {
     return `${avg.toFixed(1)} / 5`;
   };
 
+  const handleLogout = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/'; 
+};
+
   return (
-    <Box p={{ base: 4, lg: 8 }} minH="100vh" w="100vw">
+    <Box p={{ base: 4, lg: 8 }} minH="100vh" minW="100vw">
       <Heading mb={{ base: 4, lg: 6 }} fontSize={{ base: 'xl', lg: '2xl' }}>
         Hello, {user ? user.name : 'loading...'} 👋
       </Heading>
@@ -63,24 +68,36 @@ export default function Dashboard() {
         gap={3} 
       >
         <Heading size="md">Latest feedbacks</Heading>
-        <Button 
-          colorScheme="teal" 
-          size="md" 
-          width={{ base: '100%', md: 'auto' }} 
-          onClick={() => setShowForm(true)}
 
-        >
-          Give Feedback
-        </Button>
-        {showForm && (
-        <Dialog.Root open={showForm} onOpenChange={setShowForm} size="md" placement="center"> 
-        <Dialog.Trigger/>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
+        <Flex gap={3}>
+          <Button 
+            variant="ghost"
+            size="md" 
+            width={{ base: '100%', md: 'auto' }} 
+            onClick={() => setShowForm(true)}
+          >
+            Give Feedback
+          </Button>
+
+          <Button 
+            variant="ghost"
+            size="md" 
+            width={{ base: '100%', md: 'auto' }}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+      </Flex>
+
+  {showForm && (
+    <Dialog.Root open={showForm} onOpenChange={setShowForm} size="md" placement="center">
+      <Dialog.Trigger />
+      <Dialog.Backdrop />
+      <Dialog.Positioner>
         <CreateFeedbackDialog setShowForm={setShowForm} />                   
-        </Dialog.Positioner>
-       </Dialog.Root>
-      )}
+      </Dialog.Positioner>
+    </Dialog.Root>
+  )}
       </Flex>
 
       <VStack spacing={4} align="stretch">
