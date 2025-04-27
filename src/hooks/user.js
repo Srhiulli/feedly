@@ -11,18 +11,18 @@ export const useAuth = () => {
 
 
   const getUser = async (email, password) => {
-    try {
-      const { data } = await loginUser({ 
-        variables: { email, password } 
-      });
-      if (!data?.login.user) {
-        return { error: "User not found" };
-      }
-      return { user: data.login.user };
-    } catch (error) {
-      return { error: error.message };
+  try {
+    const { data } = await loginUser({ 
+      variables: { email, password } 
+    });
+    if (!data?.login.user || !data?.login.token) {
+      return { error: "User not found" };
     }
-  };
+    return { user: data.login.user, token: data.login.token }; 
+  } catch (error) {
+    return { error: error.message };
+  }
+};
 
   const getUserByEmail = async (email) => {
     try {

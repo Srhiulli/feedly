@@ -4,6 +4,8 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { typeDefs } from './src/graphql/schema/index.js';
 import prisma from './src/lib/prismaClient.js';
 import { resolvers } from '../backend/src/graphql/resolvers/resolvers.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 

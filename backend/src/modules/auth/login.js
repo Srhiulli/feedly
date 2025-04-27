@@ -1,7 +1,7 @@
 import prisma from '../../lib/prismaClient.js';
 import bcrypt from 'bcryptjs';
-// import jwt from 'jsonwebtoken'; 
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -17,14 +17,17 @@ export async function loginUser(email, password) {
     throw new Error("Senha incorreta")
   }
 
-  // const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-  //   expiresIn: '7d',
-  // });
+  const token = jwt.sign(
+    { userId: user.id },
+    process.env.JWT_SECRET, 
+    { expiresIn: '7d' }
+  );
+
 
   const { password: _, ...userWithoutPassword } = user;
 
   return {
-    // token,
+    token,
     user: userWithoutPassword,
   };
 }

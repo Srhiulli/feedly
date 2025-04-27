@@ -31,9 +31,13 @@ const Login = () => {
       if(response.error) {
         setStatus({ error: 'Login failed' });
       } 
-      navigate('/dashboard');
+       else {
+    localStorage.setItem('token', response.token);
+    navigate('/dashboard');
+  }
+}
     },
-  });
+  );
 
   return (
     <Card.Root maxW="sm" as="form" onSubmit={formik.handleSubmit}>
