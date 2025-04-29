@@ -7,10 +7,12 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/dashBoard";
 import { PublicRoute } from "./routes/PublicRoute";
 import { PrivateRoute } from "./routes/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <ApolloProvider client={client}>
+      <AuthProvider>
       <BrowserRouter>
        <Routes>
           <Route path="/" element={
@@ -29,7 +31,8 @@ function App() {
             </PrivateRoute>
           } />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+        </AuthProvider>
     </ApolloProvider>
   );
 }

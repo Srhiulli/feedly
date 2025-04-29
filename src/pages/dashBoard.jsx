@@ -4,19 +4,22 @@ import { useEffect, useState } from 'react';
 import { useFeedback } from '../hooks/feedback';
 import { format } from 'date-fns';
 import CreateFeedbackDialog from '../components/UserCard/CreateFeedback';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function Dashboard() {
   const { getFeedbackByUserId } = useFeedback();
-  const [user, setUser] = useState(null);
+  const [loggedUser, setLoggedUser] = useState(null);
   const [feedback, setFeedback] = useState([]);
   const { getUserById } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const { user: currentUser } = useAuthContext();
 
-
-  useEffect(() => {
-    fetchUser('18760e6c-ac14-452b-8db0-9eb3814aa800');
-    fetchFeedback('18760e6c-ac14-452b-8db0-9eb3814aa800');
-  }, [])
+    useEffect(() => {
+      if (currentUser?.userId) {
+      fetchUser(currentUser.userId);
+      fetchFeedback(currentUser.userId);
+    }
+  }, [currentUser]);
 
   const fetchUser = async (id) => {
     const response = await getUserById(id);
@@ -24,22 +27,19 @@ export default function Dashboard() {
       console.log('Usuário não encontrado');
       return;
     }
-    setUser(response.user);
+    setLoggedUser(response.user);
   };
-
   const fetchFeedback = async (user_id) => {
     const response = await getFeedbackByUserId(user_id);
     if (!response) return;
     setFeedback(response.feedback);
   };
-  
   const calculateAverageStars = () => {
     if (!feedback.length) return '0 / 5';
     const total = feedback.reduce((sum, f) => sum + f.stars, 0);
     const avg = total / feedback.length;
     return `${avg.toFixed(1)} / 5`;
   };
-
   const handleLogout = () => {
   localStorage.removeItem('token');
   window.location.href = '/'; 
@@ -48,9 +48,8 @@ export default function Dashboard() {
   return (
     <Box p={{ base: 4, lg: 8 }} minH="100vh" minW="100vw">
       <Heading mb={{ base: 4, lg: 6 }} fontSize={{ base: 'xl', lg: '2xl' }}>
-        Hello, {user ? user.name : 'loading...'} 👋
+        Hello, {loggedUser ? loggedUser.name : 'loading...'} 👋
       </Heading>
-
       <SimpleGrid 
         columns={{ base: 1, md: 2, xl: 3 }} 
         spacing={{ base: 3, lg: 6 }}
@@ -59,7 +58,6 @@ export default function Dashboard() {
         <StatCard title="Received feedbacks" value={feedback.length} />
         <StatCard title="Average rating" value={calculateAverageStars()} />
       </SimpleGrid>
-
       <Flex 
         justify="space-between" 
         align="center" 
@@ -99,7 +97,6 @@ export default function Dashboard() {
     </Dialog.Root>
   )}
       </Flex>
-
       <VStack spacing={4} align="stretch">
         {feedback?.length ? (
           feedback.map((item) => (
